@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GeneticAlgorithm.Three {
+    /// <summary>
+    /// A ruleset represents a set of real-valued rules
+    /// </summary>
     class RuleSet {
         private readonly List<Tuple<Condition, Concequence>> rules = new List<Tuple<Condition, Concequence>>();
 
@@ -13,7 +14,8 @@ namespace GeneticAlgorithm.Three {
         }
 
         public RuleSet(IEnumerable<double> structure) {
-            var conditionSize = 6 * 2;
+            //We just instantiate this from a double structure of ConditionSize + 1 rules.
+            const int conditionSize = 6 * 2;
             var listStructure = new List<double>(structure);
             while (listStructure.Count > 0) {
                 var condition = listStructure.Take(conditionSize).ToArray();
@@ -34,6 +36,7 @@ namespace GeneticAlgorithm.Three {
         public int Value { get; set; }
 
         public Concequence(double concequence) {
+            //We round the concequence, as we're dealing with a binary class.
             Value = (int) concequence > 0.5 ? 1 : 0;
         }
 
@@ -50,11 +53,13 @@ namespace GeneticAlgorithm.Three {
         }
 
         public bool Matches(IEnumerable<double> input) {
+            //We just parse the condition doublestring simply.
             var conditionIndex = 0;
             foreach (var inputValue in input) {
                 var minBound = Value[conditionIndex++];
                 var maxBound = Value[conditionIndex++];
 
+                //If the bounds are the wrong way around, we flip them here. Without this, performance is impacted!
                 if (minBound > maxBound) {
                     var temp = minBound;
                     minBound = maxBound;
@@ -69,7 +74,10 @@ namespace GeneticAlgorithm.Three {
         }
 
         public override string ToString() {
-            var pairs = Value.Select((val, i) => new {val, i});
+            //For output purposes, we want to actually pair these up. 
+            //So match each element with its index.
+            var pairs = Value.Select((val, i) => new {val, i}).ToList();
+            //Then zip the odd pairs up with the even pairs!
             var paired = pairs.Where(o => o.i%2 == 0).Zip(pairs.Where(o => o.i%2 != 0), (o1, o2) => o1.val + "-" + o2.val);
             return string.Format("{0}", string.Join("\t", paired));
         }

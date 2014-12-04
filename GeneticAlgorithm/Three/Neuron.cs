@@ -1,33 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GeneticAlgorithm.Three {
+    /// <summary>
+    /// The neuron type does most of the heavy lifting for the single layer neural net
+    /// </summary>
     class Neuron : INeuron {
         private readonly List<INeuron> inputs;
         private readonly Dictionary<INeuron, double> weights;
 
-        private double output = 0;
+        private double output;
 
         public Neuron(IEnumerable<INeuron> inputs, Dictionary<INeuron, double> weights) {
+            //If given an input dictionary, we can build this neuron easily
             this.inputs = new List<INeuron>(inputs);
             this.weights = weights;
         }
 
-        public Neuron(IEnumerable<INeuron> inputs, IList<double> settings) {
-
+        public Neuron(IEnumerable<INeuron> inputs, IEnumerable<double> settings) {
+            //If just given a list we need to format it.
             this.inputs = new List<INeuron>(inputs);
-            this.weights = settings.Zip(this.inputs, (weight, neuron) => new {neuron, weight}).ToDictionary(elem=>elem.neuron, elem=>elem.weight);
-        }
-
-        private IEnumerable<Tuple<int, T>> Enumerate<T>(IEnumerable<T> enumerable) {
-            var second = enumerable as T[] ?? enumerable.ToArray();
-            return Enumerable.Range(0, second.Count()).Zip(second, Tuple.Create);
+            //So we tie the inputs and weights together, then turn it into a dictionary. 
+            weights = settings.Zip(this.inputs, (weight, neuron) => new {neuron, weight}).ToDictionary(elem=>elem.neuron, elem=>elem.weight);
         }
 
         public double Output() {
+            //The output function just sums the inputs, recursively.
             var sum = 0d;
             foreach (var neuron in inputs) {
                 var weight = weights[neuron];
@@ -44,21 +44,20 @@ namespace GeneticAlgorithm.Three {
             return value;
         }
 
-        private double Limit(double result) {
-            return result > 0.0 ? 1 : 0;
-        }
-
         public override string ToString() {
             return string.Format("[Neuron {1} | {0}]", 
-                string.Join(", ", weights.Values.Select(key=>key.ToString())), GetHashCode());
+                string.Join(", ", weights.Values.Select(key=>key.ToString(CultureInfo.InvariantCulture))), GetHashCode());
         }
     }
 
+    /// <summary>
+    /// Input neurons allow their outputs to be set manually.
+    /// </summary>
     class InputNeuron : INeuron{
         private double input;
 
-        public void SetInput(double input) {
-            this.input = input;
+        public void SetInput(double newInput) {
+            input = newInput;
         }
 
         public InputNeuron(double input) {

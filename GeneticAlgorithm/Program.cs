@@ -7,32 +7,16 @@ namespace GeneticAlgorithm
 {
     class Program {
         static void Main(string[] args) {
-            var oneLogger = new FitnessLogger();
-            var twoLogger = new FitnessLogger();
-            var netLogger = new FitnessLogger();
-            var rulLogger = new FitnessLogger();
-            
+            //Entry point simply wants to kick off a run. There isn't any real configuration to do.
+            //So we just run each in turn, and print out the results.
+            var one = new SolveOne();
+            Console.WriteLine(one.Solve());
 
-            DateTime start = DateTime.Now;
-            var one = new SolveOne(oneLogger);
-            var oneSolution = one.Solve();
-            Console.WriteLine(oneSolution);
-            Console.WriteLine(DateTime.Now - start);
-
-            start = DateTime.Now;
-            var two = new SolveTwo(twoLogger);
+            var two = new SolveTwo();
             Console.WriteLine(two.Solve());
-            Console.WriteLine(DateTime.Now - start);
 
-            start = DateTime.Now;
-            var three = new SolveThree(rulLogger, netLogger);
+            var three = new SolveThree();
             Console.WriteLine(three.Solve());
-            Console.WriteLine(DateTime.Now - start);
-
-            oneLogger.Save("one.csv");
-            twoLogger.Save("two.csv");
-            netLogger.Save("net.csv");
-            rulLogger.Save("rul.csv");
 
             Console.Read();
         }

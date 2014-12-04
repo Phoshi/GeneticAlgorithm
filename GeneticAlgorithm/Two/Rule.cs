@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GeneticAlgorithm.Two {
+    /// <summary>
+    /// Rule type represents one rule
+    /// </summary>
     class Rule {
         private readonly Trit[] match;
         private readonly bool expectedResult;
@@ -30,6 +30,8 @@ namespace GeneticAlgorithm.Two {
                 return false;
             }
 
+            //We just want to check if the 1s and 0s match
+            //Wildcards implicitly match
             for (int i = 0; i < str.Length; i++) {
                 if (match[i] == Trit.On && str[i] != '1') return false;
                 if (match[i] == Trit.Off && str[i] != '0') return false;
@@ -38,6 +40,8 @@ namespace GeneticAlgorithm.Two {
         }
 
         public Rule Crossover(Rule other, int seed) {
+            //Intra-rule crossover is a bit of a hack, but should produce not-too-obviously deterministic behaviour.
+            //It's like Inter-rule crossover, except smaller and done because ruleset 2 is structured poorly.
             var rng = new Random(seed);
             var point = rng.Next(match.Length);
             var newRule = new Trit[match.Length];

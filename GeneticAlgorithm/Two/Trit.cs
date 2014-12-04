@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GeneticAlgorithm.Two {
+    /// <summary>
+    /// A trit is a trinary bit.
+    /// </summary>
     public enum Trit {
         On,
         Off,
